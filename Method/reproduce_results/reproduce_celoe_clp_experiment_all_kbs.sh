@@ -1,0 +1,6 @@
+#!/bin/sh
+python ./celoe_clp/reproduce_learning_concepts_with_length_predictor_carcinogenesis_kb.py
+python ./celoe_clp/reproduce_learning_concepts_with_length_predictor_semantic_bible_kb.py
+python ./celoe_clp/reproduce_learning_concepts_with_length_predictor_mutagenesis_kb.py
+python ./celoe_clp/reproduce_learning_concepts_with_length_predictor_family_benchmark_kb.py
+python ./celoe_clp/reproduce_learning_concepts_with_length_predictor_vicodi_kb.py

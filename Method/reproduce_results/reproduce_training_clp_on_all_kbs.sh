@@ -1,0 +1,5 @@
+#!/bin/sh
+python ./train_clp/reproduce_training_length_predictors_carcinogenesis_kb.py
+python ./train_clp/reproduce_training_length_predictors_semantic_bible_kb.py
+python ./train_clp/reproduce_training_length_predictors_mutagenesis_kb.py
+python ./train_clp/reproduce_training_length_predictors_vicodi_kb.py
