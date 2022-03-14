@@ -2,7 +2,7 @@ import torch, random
 import sys, os
 base_path = os.path.dirname(os.path.realpath(__file__)).split('concept_length_predictors')[0]
 sys.path.append(base_path)
-from concept_length_predictors.models import LengthLearner_LSTM, LengthLearner_GRU, LengthLearner_MLP, LengthLearner_CNN, LengthLearner_Reformer
+from concept_length_predictors.models import LengthLearner_LSTM, LengthLearner_GRU, LengthLearner_MLP, LengthLearner_MLP2, LengthLearner_CNN, LengthLearner_Reformer
 from Embeddings.models import *
 from helper_classes.dataloader import CLPDataLoader
 from owlapy.model import OWLNamedIndividual
@@ -51,6 +51,8 @@ class ConceptLengthPredictor:
             return LengthLearner_CNN(self.kwargs)
         elif self.learner_name == "MLP":
             return LengthLearner_MLP(self.kwargs)
+        elif self.learner_name == 'MLP2':
+            return LengthLearner_MLP2(self.kwargs)
         elif self.learner_name == 'Reformer':
             return LengthLearner_Reformer(self.kwargs)
         else:

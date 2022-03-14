@@ -725,8 +725,12 @@ class Experiment:
 
             if not os.path.exists(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/"):
                 os.mkdir(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/")
-            with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_with_val.json", "w") as plot_file:
-                json.dump({'train': Training_data, 'val': Validation_data}, plot_file, indent=3)
+            if len(List_nets) > 1:
+                with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_with_val.json", "w") as plot_file:
+                    json.dump(Training_data, plot_file, indent=3)
+            else:
+                with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_with_val_single.json", "w") as plot_file:
+                    json.dump(Training_data, plot_file, indent=3)
                 
             for crv in Training_data['acc']:
                 plt.plot(crv)
@@ -770,22 +774,26 @@ class Experiment:
                 
             if not os.path.exists(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/"):
                 os.mkdir(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/")
-            with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_with_val.json", "w") as plot_file:
-                json.dump(Training_data, plot_file, indent=3)
+            if len(List_nets) > 1:
+                with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_no_val.json", "w") as plot_file:
+                    json.dump(Training_data, plot_file, indent=3)
+            else:
+                with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_no_val_single.json", "w") as plot_file:
+                    json.dump(Training_data, plot_file, indent=3)
 
-            for crv in Training_data['acc']:
-                plt.plot(crv)
-            plt.legend(tuple(List_nets))
-            plt.xlabel("Number of epochs")
-            plt.ylabel("Accuracy (%)")
-            plt.savefig(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves/no_val_tr_acc.png")
-            plt.close()
-
-            for crv in Training_data['loss']:
-                plt.plot(crv)
-            plt.legend(tuple(List_nets))
-            plt.xlabel("Number of epochs")
-            plt.ylabel("Loss")
-            plt.savefig(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves/no_val_tr_loss.png")
-            plt.close()
-            
+#            for crv in Training_data['acc']:
+#                plt.plot(crv)
+#            plt.legend(tuple(List_nets))
+#            plt.xlabel("Number of epochs")
+#            plt.ylabel("Accuracy (%)")
+#            plt.savefig(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves/no_val_tr_acc.png")
+#            plt.close()
+#
+#            for crv in Training_data['loss']:
+#                plt.plot(crv)
+#            plt.legend(tuple(List_nets))
+#            plt.xlabel("Number of epochs")
+#            plt.ylabel("Loss")
+#            plt.savefig(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves/no_val_tr_loss.png")
+#            plt.close()
+#            

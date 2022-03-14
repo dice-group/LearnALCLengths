@@ -1,5 +1,6 @@
 import torch, torch.nn as nn, numpy as np
 from sklearn.metrics import accuracy_score, f1_score
+import random
 
 torch.backends.cudnn.deterministic = True
 seed = 1
@@ -106,6 +107,42 @@ class LengthLearner_MLP(nn.Module):
     def __architecture__(self):
         print("MLP architecture:")
         print(self.layer_dims)
+
+class LengthLearner_MLP2(nn.Module):
+    def __init__(self, kwargs):
+        super().__init__()
+        self.name = 'MLP2'
+        self.as_classification = kwargs['as_classification']
+        linears = []
+        random.seed(kwargs['seed'])
+        layer_dims = [kwargs['input_size']] + [kwargs['num_units']//random.choice(range(1,10)) for _ in range(kwargs['mlp_n_layers']-1)]+[kwargs['out_size']]
+        self.layer_dims = layer_dims
+        self.__architecture__()
+        for i in range(kwargs['mlp_n_layers']):
+            if i == 0:
+                linears.extend([nn.Linear(layer_dims[i], layer_dims[i+1]), nn.ReLU()])
+            elif i < kwargs['mlp_n_layers']-1 and i%2==0:
+                linears.extend([nn.Linear(layer_dims[i], layer_dims[i+1]), nn.ReLU()])
+            elif i < kwargs['mlp_n_layers']-1 and i%2==1:
+                linears.extend([nn.Linear(layer_dims[i], layer_dims[i+1]), nn.SELU(), nn.Dropout(p=kwargs['dropout_prob'])])
+            else:
+                linears.extend([nn.Linear(layer_dims[i], layer_dims[i+1])])
+        self.linears = nn.ModuleList(linears)
+      
+    def forward(self, x):
+        for l in self.linears:
+            x = x.view(x.shape[0], x.shape[1], -1)
+            x = l(x)
+        if self.as_classification:
+            x = torch.sigmoid(x.mean(1))
+        else:
+            x = torch.selu(x.mean(1))
+        return x
+    
+    def __architecture__(self):
+        print("MLP2 architecture:")
+        print(self.layer_dims)
+        
 
 class LengthLearner_CNN(nn.Module):
     def __init__(self, kwargs):
