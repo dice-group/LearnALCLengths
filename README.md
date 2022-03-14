@@ -11,26 +11,27 @@ https://github.com/dice-group/LearnALCLengths.git
 ```
 conda env create -f environment.yml
 ```
-A conda environment (cll) will be created. Next activate the environment:
+A conda environment (clip) will be created. Next activate the environment:
 ``` conda activate clip```
 
 - Download DL-Learner-1.4.0 from [github](https://github.com/SmartDataAnalytics/DL-Learner/releases) and extract it into Method (cloned above)
 
 - Clone DLFoil and DLFocl [dlfoil](https://bitbucket.org/grizzo001/dl-foil.git), [dlfocl](https://bitbucket.org/grizzo001/dlfocl.git), and extract the two repositories into LearnLengths/Method
 
-- Install Java (version 8+) and Apache Maven
+- Install Java (version 8+) and Apache Maven (Only necessary for running DL-Learner and DL-Foil/DL-Focl)
 
 ## Reproducing the reported results
 
 ### Datasets (necessary for running the algorithms)
 
-- Download [datasets](https://drive.google.com/file/d/1SubgKzRz1N77_cU7QsSw1a27nveLkV6d/view?usp=sharing) and extract the zip file into Method and rename the folder as Datasets
+- Download [datasets](https://hobbitdata.informatik.uni-leipzig.de/CLIP/Datasets-CLIP.zip) and extract the zip file into Method and rename the folder as Datasets
 
 ### CLIP (our method)
 
 *Open a terminal and navigate into Method/reproduce_results/* ``` cd LearnLengths/Method/reproduce_results/```
 - Reproduce CLIP concept learning results on all KBs ``` sh reproduce_celoe_clp_experiment_all_kbs.sh```
 - Reproduce the training of concept length predictors ``` sh reproduce_training_clp_on_all_kbs.sh```
+- Furthermore, one can train concept length predictors on a single knowledge base as follows  ``` python reproduce_training_length_predictors_K_kb```, where ```K``` is one of carcinogenesis, mutagenesis, semantic_bible or vicodi. Use -h to see more training options (example ```python reproduce_training_length_predictors_carcinogenesis_kb -h ```).
 
 ### CELOE, ELTL, OCEL from DL-Learner
 
@@ -69,6 +70,7 @@ The authors did not provide sufficient documentation to run  their algorithm; th
 
 - Navigate into Method/Embeddings/Compute-Embeddings/ and run the following to embed your knowledge base: ```python run_script.py --path_dataset_folder your_folder_name```
 
+- Train concept length predictors by preparing and running your python file ``` reproduce_training_length_predictors_K_kb.py ``` following examples in ```Method/reproduce_results/train_clp/```.
 
 - Finally, prepare a script (see examples in ```Method/reproduce_results/celoe_clp/```) and run CLIP on your data. 
 

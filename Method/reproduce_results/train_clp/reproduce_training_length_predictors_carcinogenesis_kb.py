@@ -33,7 +33,11 @@ kwargs = {"learner_name":"GRU", "emb_model_name":"", "pretrained_embedding_path"
           'conv_out':2040, 'mlp_n_layers':4, "as_classification":as_classification}
 
 Models = ["GRU", "LSTM", "CNN", "MLP"]
-
+print()
+print('#'*50)
+print('On Carcinogenesis knowledge base')
+print('#'*50)
+print()
 experiment = Experiment(kwargs)
 
 data_train, data_test = train_test_split(data, test_size=0.2, random_state=123)
@@ -51,22 +55,35 @@ stats.update({l: 0 for l in range(1,max_len+1) if not l in stats})
 stats = dict(sorted(stats.items(), key=lambda x: x[0]))
 probs = list(map(lambda x: float(x)/len(lengths), stats.values()))
 print("probs: ", {l+1 : s for l,s in enumerate(probs)})
-print()
+print('\nResults on training, validation and test data...\n')
 RM(Ytest=Yt, max_len=max_len, probs=probs)
 RM(Ytest=Yv, max_len=max_len, probs=probs)
 RM(Ytest=Ytest, max_len=max_len, probs=probs)
 print("*********************** Random Model ***********************")
 
+import argparse
+
+parser = argparse.ArgumentParser()
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    elif v.lower() in ['t', 'true', 'y', 'yes', '1']:
+        return True
+    elif v.lower() in ['f', 'false', 'n', 'no', '0']:
+        return False
+    else:
+        raise ValueError('Ivalid boolean value.')
+parser.add_argument('--final', type=str2bool, default=False, help="Whether to train on whole data and save model")
+parser.add_argument('--test', type=str2bool, default=True, help="Whether to make predictions on test data")
+parser.add_argument('--cross_validate', type=str2bool, default=True, help="Whether to use cross validation")
+parser.add_argument('--record_runtime', type=str2bool, default=True, help="Whether to record training runtime")
+parser.add_argument('--save_model', type=str2bool, default=True, help="Whether to save the model after training")
+args = parser.parse_args()
 print()
-final = False
-test = True
-cross_validate = True
-record_runtime = False
-save_model = True
-if final:
+if args.final:
     data_train = data
-    test = False
-    cross_validate = False
-    record_runtime = True
-    save_model = True
-experiment.train_all_nets(Models, data_train, data_test, epochs=50, clp_batch_size=512, tc_batch_size=1024, kf_n_splits=10, cross_validate=cross_validate, test=test, save_model = save_model, include_embedding_loss=True, optimizer = 'Adam', tc_label_smoothing=0.9, record_runtime=record_runtime)
+    args.test = False
+    args.cross_validate = False
+    args.record_runtime = True
+    args.save_model = True
+experiment.train_all_nets(Models, data_train, data_test, epochs=50, clp_batch_size=512, tc_batch_size=1024, kf_n_splits=10, cross_validate=args.cross_validate, test=args.test, save_model = args.save_model, include_embedding_loss=False, optimizer = 'Adam', tc_label_smoothing=0.9, record_runtime=args.record_runtime)
