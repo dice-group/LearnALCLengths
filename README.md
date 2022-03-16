@@ -16,7 +16,7 @@ A conda environment (clip) will be created. Next activate the environment:
 
 - Download DL-Learner-1.4.0 from [github](https://github.com/SmartDataAnalytics/DL-Learner/releases) and extract it into Method (cloned above)
 
-- Clone DLFoil and DLFocl [dlfoil](https://bitbucket.org/grizzo001/dl-foil.git), [dlfocl](https://bitbucket.org/grizzo001/dlfocl.git), and extract the two repositories into LearnLengths/Method
+- Clone DLFoil and DLFocl [dlfoil](https://bitbucket.org/grizzo001/dl-foil.git), [dlfocl](https://bitbucket.org/grizzo001/dlfocl.git), and extract the two repositories into LearnALCLengths/Method
 
 - Install Java (version 8+) and Apache Maven (Only necessary for running DL-Learner and DL-Foil/DL-Focl)
 
@@ -28,14 +28,14 @@ A conda environment (clip) will be created. Next activate the environment:
 
 ### CLIP (our method)
 
-*Open a terminal and navigate into Method/reproduce_results/* ``` cd LearnLengths/Method/reproduce_results/```
+*Open a terminal and navigate into Method/reproduce_results/* ``` cd LearnALCLengths/Method/reproduce_results/```
 - Reproduce CLIP concept learning results on all KBs ``` sh reproduce_celoe_clp_experiment_all_kbs.sh```
 - Reproduce the training of concept length predictors ``` sh reproduce_training_clp_on_all_kbs.sh```
-- Furthermore, one can train concept length predictors on a single knowledge base as follows  ``` python reproduce_training_length_predictors_K_kb```, where ```K``` is one of carcinogenesis, mutagenesis, semantic_bible or vicodi. Use -h to see more training options (example ```python reproduce_training_length_predictors_carcinogenesis_kb -h ```).
+- Furthermore, one can train concept length predictors on a single knowledge base as follows  ``` python reproduce_training_length_predictors_K_kb.py```, where ```K``` is one of carcinogenesis, mutagenesis, semantic_bible or vicodi. Use -h to see more training options (example ```python reproduce_training_length_predictors_carcinogenesis_kb.py -h ```).
 
 ### CELOE, ELTL, OCEL from DL-Learner
 
-*Open a terminal and navigate into Method/other_learning_systems/scripts* ``` cd LearnLengths/Method/dllearner/scripts```
+*Open a terminal and navigate into Method/other_learning_systems/scripts* ``` cd LearnALCLengths/Method/dllearner/scripts```
 - Reproduce concept learning results on knowledge base K for algorithm Algo ``` python reproduce_dllearner_experiment.py --learning_systems Algo --knowledge_bases K```
 - To reproduce the results for multiple algorithms on multiple knowledge bases, use the schema ``` python reproduce_dllearner_experiment.py --learning_systems Algo1 Algo2... --knowledge_bases K1 K2...```
 
@@ -43,10 +43,10 @@ Note that ```Algo``` is one of celoe, ocel or eltl, and ```K``` is one of carcin
 
 ### DLFoil and DLFocl
 
-*For DLFoil, open a terminal and navigate into Method/dl-foil/DLFoil2* ``` cd LearnLengths/Method/dl-foil/DLFoil2```
+*For DLFoil, open a terminal and navigate into Method/dl-foil/DLFoil2* ``` cd LearnALCLengths/Method/dl-foil/DLFoil2```
 - Run ```mvn clean install```
-- Open a different terminal and run the following ```python LearnLengths/Method/generators/generate_dlfoil_config_all_kbs.py```
-- Now execute the following in the first terminal (in LearnLengths/Method/dl-foil/DLFoil2): ```mvn -e exec:java -Dexec.mainClass=it.uniba.di.lacam.ml.DLFoilTest -Dexec.args=kb_config.xml >> ../dlfoil_out_kb.txt```, where `kb` is one of carcinogenesis, mutagenesis, semantic_bible or vicodi.
+- Open a different terminal and run the following ```python LearnALCLengths/Method/generators/generate_dlfoil_config_all_kbs.py```
+- Now execute the following in the first terminal (in LearnALCLengths/Method/dl-foil/DLFoil2): ```mvn -e exec:java -Dexec.mainClass=it.uniba.di.lacam.ml.DLFoilTest -Dexec.args=K_config.xml >> ../dlfoil_out_K.txt```, where `K` is one of carcinogenesis, mutagenesis, semantic_bible or vicodi.
 
 Note that DLFoil fails to solve our learning problems as it gets stuck on the refinement of certain partial descriptions.
 
@@ -57,7 +57,7 @@ The authors did not provide sufficient documentation to run  their algorithm; th
 
 ### Statistical Test
 
-*Open a terminal and navigate into Method/reproduce_results/* ``` cd LearnLengths/Method/reproduce_results/```
+*Open a terminal and navigate into Method/reproduce_results/* ``` cd LearnALCLengths/Method/reproduce_results/```
 - Run Wilcoxon statistical test on concept learning results `All Algos vs CLIP`: ``` sh run_statistical_test_on_all_kbs.sh```
 
 ### Use your own data
