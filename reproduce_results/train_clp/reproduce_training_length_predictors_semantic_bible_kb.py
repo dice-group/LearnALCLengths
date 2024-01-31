@@ -12,33 +12,34 @@ from util.data import Data
 from concept_length_predictors.models import RM
 import json
 
-data_path = base_path+"Datasets/mutagenesis/Train_data/Data.json"
+data_path = base_path+"Datasets/semantic_bible/Train_data/Data.json"
 with open(data_path, "r") as file:
     data = json.load(file)
 data = list(data.items())
 data = Experiment.remove_minority_problem_types(data)
-path_to_triples = base_path+"Datasets/mutagenesis/Triples/"
+path_to_triples = base_path+"Datasets/semantic_bible/Triples/"
 triples = Data({"path_to_triples":path_to_triples})
 
 as_classification = True
 num_classes = max(v["target concept length"] for _,v in data)+1 if as_classification else 1
-kwargs = {"learner_name":"GRU", "emb_model_name":"", "pretrained_embedding_path":base_path+"Datasets/mutagenesis/Model_weights/ConEx_GRU.pt", "pretrained_length_learner":base_path+"Datasets/mutagenesis/Model_weights/GRU.pt", "path_to_csv_embeddings":base_path+"Embeddings/mutagenesis/ConEx_entity_embeddings.csv",
+kwargs = {"learner_name":"GRU", "emb_model_name":"", "pretrained_embedding_path":base_path+"Datasets/semantic_bible/Model_weights/ConEx_GRU.pt", "pretrained_length_learner":base_path+"Datasets/semantic_bible/Model_weights/GRU.pt", "path_to_csv_embeddings":base_path+"Embeddings/semantic_bible/ConEx_entity_embeddings.csv",
          "learning_rate":0.003, "decay_rate":0, "path_to_triples":path_to_triples,
          "random_seed":1, "embedding_dim":20, "num_entities":len(triples.entities),
-          "num_relations":len(triples.relations), "num_ex":1000, "input_dropout":0.0, 
+          "num_relations":len(triples.relations), "num_ex":362, "input_dropout":0.0, 
           "kernel_size":4, "num_of_output_channels":8, "feature_map_dropout":0.1,
           "hidden_dropout":0.1, "rnn_n_layers":2,'rnn_hidden':100, 'input_size':41,
           'linear_hidden':200, 'out_size':num_classes, 'dropout_prob': 0.1, 'num_units':500,
-          'seed':10, 'seq_len':1000,'kernel_w':5, 'kernel_h':7, 'stride_w':1, 'stride_h':7,
-          'conv_out':2040, 'mlp_n_layers':4, "as_classification":as_classification}
+          'seed':10, 'seq_len':362,'kernel_w':5, 'kernel_h':11, 'stride_w':1, 'stride_h':7,
+          'conv_out':680, 'mlp_n_layers':4, "as_classification":as_classification}
 
 Models = ["GRU", "LSTM", "CNN", "MLP"]
 
 print()
 print('#'*50)
-print('On Mutagenesis knowledge base')
+print('On Semantic Bible knowledge base')
 print('#'*50)
 print()
+
 experiment = Experiment(kwargs)
 
 data_train, data_test = train_test_split(data, test_size=0.2, random_state=123)
@@ -72,7 +73,7 @@ def str2bool(v):
     elif v.lower() in ['f', 'false', 'n', 'no', '0']:
         return False
     else:
-        raise ValueError('Ivalid boolean value.')
+        raise ValueError('Invalid boolean value.')
 parser.add_argument('--final', type=str2bool, default=False, help="Whether to train on whole data and save model")
 parser.add_argument('--test', type=str2bool, default=True, help="Whether to make predictions on test data")
 parser.add_argument('--cross_validate', type=str2bool, default=True, help="Whether to use cross validation")

@@ -1,7 +1,6 @@
 import os, sys
 currentpath = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(currentpath.split("celoe_clp")[0])
-# from ontolearn.refinement_operators import ExpressRefinement
 from ontolearn import KnowledgeBase
 from ontolearn.learning_problem import PosNegLPStandard
 from ontolearn.concept_learner import CELOE

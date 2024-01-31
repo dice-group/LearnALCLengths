@@ -14,7 +14,7 @@ from util.data import Data
 
 import sys, os
 
-base_path = os.path.dirname(os.path.realpath(__file__)).split('LearnALCLengths')[0]
+base_path = "./"
 
 import argparse
 if __name__=='__main__':
@@ -27,7 +27,7 @@ if __name__=='__main__':
         elif v.lower() in ['f', 'false', 'n', 'no', '0']:
             return False
         else:
-            raise ValueError('Ivalid boolean value.')
+            raise ValueError('Invalid boolean value.')
             
     parser = argparse.ArgumentParser()
     parser.add_argument('--kb', type=str, default="carcinogenesis", help="Knowledge base name")
@@ -40,12 +40,12 @@ if __name__=='__main__':
     parser.add_argument('--max_results', type=int, default=10, help="The maximum number of nodes in the queue at each step of the search process")
     args = parser.parse_args()
     
-    KB = KnowledgeBase(path=f"{base_path}datasets/{args.kb}/{args.kb}.owl")
+    KB = KnowledgeBase(path=f"{base_path}Datasets/{args.kb}/{args.kb}.owl")
     
-    with open(base_path+f"datasets/{args.kb}/Test_data/Data.json", "r") as file_lp:
+    with open(base_path+f"Datasets/{args.kb}/Learning_problems/learning_problems.json", "r") as file_lp:
         learning_problems = json.load(file_lp)
 
-    path_to_triples = base_path+f"datasets/{args.kb}/Triples/"
+    path_to_triples = base_path+f"Datasets/{args.kb}/Triples/"
     triples = Data({"path_to_triples":path_to_triples})
 
     with open("max_length.json") as file:
@@ -80,13 +80,18 @@ if __name__=='__main__':
                  'seed':10, 'seq_len':1000,'kernel_w':5, 'kernel_h':11, 'stride_w':1, 'stride_h':7,
                  'conv_out':2040, 'mlp_n_layers':4, "as_classification":as_classification
          }
+    
+    max_num_lps = 100
+    learning_problems = list(learning_problems.items())
+    random.seed(1)
+    random.shuffle(learning_problems)
     algo = CELOECLP(kwargs)
     results = {}
     print("#"*50)
     print("On {} KG".format(args.kb.capitalize()))
     print("#"*50)
 
-    for target_str, value in learning_problems:
+    for i, (target_str, value) in enumerate(learning_problems):
         print(f"###Learning {target_str}###")
         pos = value['positive examples']
         neg = value['negative examples']
@@ -108,15 +113,17 @@ if __name__=='__main__':
         _, acc = Acc.score(KB.individuals_set(solution))
         results.setdefault('Accuracy', []).append(acc)
         results.setdefault('Pred-Length', []).append(predicted_length)
+        if i == max_num_lps-1:
+            break
 
     avg_results = {}            
     for key in results:
         if not key in ["Learned Concept", "Prediction"]:
             avg_results.setdefault(key, {}).update({"mean": np.mean(results[key]), "std": np.std(results[key])})
-    with open(base_path+f"datasets/{args.kb}/Results/concept_learning_results_clip.json", "w") as results_file:
+    with open(base_path+f"Poster/{args.kb}/Results/concept_learning_results_clip.json", "w") as results_file:
         json.dump(results, results_file, ensure_ascii=False, indent=3)
           
-    with open(base_path+f"datasets/{args.kb}/Results/concept_learning_avg_results_clip.json", "w") as avg_results_file:
+    with open(base_path+f"Poster/{args.kb}/Results/concept_learning_avg_results_clip.json", "w") as avg_results_file:
         json.dump(avg_results, avg_results_file, indent=3)
 
     print()

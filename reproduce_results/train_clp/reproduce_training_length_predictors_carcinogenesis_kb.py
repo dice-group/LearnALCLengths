@@ -72,7 +72,7 @@ def str2bool(v):
     elif v.lower() in ['f', 'false', 'n', 'no', '0']:
         return False
     else:
-        raise ValueError('Ivalid boolean value.')
+        raise ValueError('Invalid boolean value.')
 parser.add_argument('--final', type=str2bool, default=False, help="Whether to train on whole data and save model")
 parser.add_argument('--test', type=str2bool, default=True, help="Whether to make predictions on test data")
 parser.add_argument('--cross_validate', type=str2bool, default=True, help="Whether to use cross validation")

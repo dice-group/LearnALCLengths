@@ -12,7 +12,7 @@ from concept_length_predictors.helper_classes import ConceptLengthPredictor
 from torch.optim.lr_scheduler import ExponentialLR
 from torch.nn import CrossEntropyLoss
 import matplotlib.pyplot as plt
-plt.style.use('seaborn-whitegrid')
+#plt.style.use('seaborn-whitegrid')
 from sklearn.metrics import f1_score, accuracy_score
 import time
 
@@ -78,19 +78,6 @@ class Experiment:
         mean_length_count = sum(length_counts.values()) // len(length_counts)
         return list(filter(lambda item: length_counts[item[1][label]] >= mean_length_count/5, data))
     
-#     def upsample_and_balance(self, data:list, label="target concept length"):
-#         np.random.seed(1)
-#         data = self.remove_minority_problem_types(data, label)
-#         upsampled_data = []
-#         length_counts = sorted(Counter(v[label] for _, v in data).items(), key=lambda item: item[1])
-#         lengths = [key for key, _ in length_counts]
-#         majority_length, max_length_count = length_counts.pop()
-#         upsampled_data.extend(list(filter(lambda pbm: pbm[1][label]==majority_length, data)))
-#         for l, _ in length_counts:
-#             filt_data = list(filter(lambda pbm: pbm[1][label]==l, data))
-#             upsampled_data.extend(resample(filt_data, replace=True, n_samples=max_length_count, random_state=123))   
-#         random.shuffle(upsampled_data)
-#         return upsampled_data
     
     def show_num_learnable_params(self):
         print("*"*20+"Trainable model size"+"*"*20)
@@ -780,20 +767,3 @@ class Experiment:
             else:
                 with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_no_val_single.json", "w") as plot_file:
                     json.dump(Training_data, plot_file, indent=3)
-
-#            for crv in Training_data['acc']:
-#                plt.plot(crv)
-#            plt.legend(tuple(List_nets))
-#            plt.xlabel("Number of epochs")
-#            plt.ylabel("Accuracy (%)")
-#            plt.savefig(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves/no_val_tr_acc.png")
-#            plt.close()
-#
-#            for crv in Training_data['loss']:
-#                plt.plot(crv)
-#            plt.legend(tuple(List_nets))
-#            plt.xlabel("Number of epochs")
-#            plt.ylabel("Loss")
-#            plt.savefig(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves/no_val_tr_loss.png")
-#            plt.close()
-#            
