@@ -9,9 +9,9 @@ https://github.com/dice-group/LearnALCLengths.git
 ```
 - Install Anaconda3, then all required librairies by executing the following commands (Linux):
 
-1 - ```conda create -n clip python==3.11.5 && conda activate clip ```
-2 - ```pip install -r requirements.txt ```
-3 - ```git clone https://github.com/dice-group/Ontolearn.git && cd Ontolearn && git checkout 0.5.4 && pip install -e .```
+1. ```conda create -n clip python==3.11.5 && conda activate clip ```
+2. ```pip install -r requirements.txt ```
+3. ```git clone https://github.com/dice-group/Ontolearn.git && cd Ontolearn && git checkout 0.5.4 && pip install -e .```
 
 - Download DL-Learner-1.4.0 from [github](https://github.com/SmartDataAnalytics/DL-Learner/releases) and extract it into this repository (cloned above)
 
