@@ -23,7 +23,7 @@ https://github.com/dice-group/LearnALCLengths.git
 
 ### Datasets (necessary for running the algorithms)
 
-- Download [datasets](https://hobbitdata.informatik.uni-leipzig.de/CLIP/Datasets-CLIP.zip) and extract the zip file into `LearnALCLengths/` and rename the folder as Datasets
+- Download [datasets](https://files.dice-research.org/archive/CLIP/) and extract the zip file into `LearnALCLengths/` and rename the folder as Datasets
 
 ### CLIP (our method)
 
