@@ -26,12 +26,12 @@ class CLPDataLoader(Data, metaclass=ABCMeta):
             pos = value['positive examples']
             neg = value['negative examples']
             try:
-                datapoint_pos = torch.FloatTensor(list(map(lambda x: embeddings.loc[x], pos)))
-                datapoint_neg = torch.FloatTensor(list(map(lambda x: embeddings.loc[x], neg)))
+                datapoint_pos = torch.FloatTensor(embeddings.loc[pos].values)
+                datapoint_neg = torch.FloatTensor(embeddings.loc[neg].values)
             except KeyError:
                 try:
-                    datapoint_pos = torch.FloatTensor(list(map(lambda x: embeddings.loc[x.replace("#", ".")], pos)))
-                    datapoint_neg = torch.FloatTensor(list(map(lambda x: embeddings.loc[x.replace("#", ".")], neg)))
+                    datapoint_pos = torch.FloatTensor(embeddings.loc[list(map(lambda x: x.replace("#", "."), pos))].values)
+                    datapoint_neg = torch.FloatTensor(embeddings.loc[list(map(lambda x: x.replace("#", "."), neg))].values)
                 except KeyError:
                     continue
             datapoint_pos = torch.cat([datapoint_pos, torch.ones((datapoint_pos.shape[0],1))], dim=1)

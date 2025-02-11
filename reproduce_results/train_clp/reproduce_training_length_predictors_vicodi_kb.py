@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import torch, pandas as pd, numpy as np
-import sys, os, json
+import sys, os, json, random
 from collections import Counter
 
 base_path = os.path.dirname(os.path.realpath(__file__)).split('reproduce_results')[0]
@@ -39,6 +39,8 @@ print('#'*50)
 print('On Vicodi knowledge base')
 print('#'*50)
 print()
+
+random.seed(kwargs['seed'])
 
 experiment = Experiment(kwargs)
 

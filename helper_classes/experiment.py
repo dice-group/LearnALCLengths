@@ -36,7 +36,6 @@ class Experiment:
             er_vocab[(triple[0], triple[1])].append(triple[2])
         return er_vocab
     def get_batch(self, x, y, batch_size, shuffle=True):
-        random.seed(self.kwargs['seed'])
         if shuffle:
             indx = list(range(x.shape[0]))
             random.shuffle(indx)
@@ -597,11 +596,19 @@ class Experiment:
                 All_losses["val"].append(Val_losses)
                 All_acc["train"].append(Train_acc)
                 All_acc["val"].append(Val_acc)
+                
         min_num_steps = min(min([len(l) for l in All_losses['train']]), min([len(l) for l in All_losses['val']]))
-        train_l = np.array([l[:min_num_steps] for l in All_losses["train"]]).mean(0)
-        val_l = np.array([l[:min_num_steps] for l in All_losses["val"]]).mean(0)
-        t_acc = np.array([l[:min_num_steps] for l in All_acc["train"]]).mean(0)
-        v_acc = np.array([l[:min_num_steps] for l in All_acc["val"]]).mean(0)
+
+        train_folds_loss = np.array([l[:min_num_steps] for l in All_losses["train"]])
+        val_folds_loss = np.array([l[:min_num_steps] for l in All_losses["val"]])
+        train_folds_acc = np.array([l[:min_num_steps] for l in All_acc["train"]])
+        val_folds_acc = np.array([l[:min_num_steps] for l in All_acc["val"]])
+        
+        train_l = train_folds_loss.mean(0)
+        val_l = val_folds_loss.mean(0)
+        t_acc = train_folds_acc.mean(0)
+        v_acc = val_folds_acc.mean(0)
+        
         del All_losses, All_acc        
         length_predictor.load_state_dict(best_weights_clp)
         if embeddings is None:
@@ -667,7 +674,7 @@ class Experiment:
             if embeddings is None:
                 torch.save(embedding_model, self.kwargs['path_to_triples'].split("Triples")[0]+"Model_weights/"+embedding_model.name+'_'+length_predictor.name+".pt")
             print("{} saved".format(length_predictor.name))
-        return t_acc, v_acc, train_l, val_l
+        return t_acc, v_acc, train_l, val_l, train_folds_loss, val_folds_loss, train_folds_acc, val_folds_acc
     
     
     def train_and_eval(self, data_train, data_test, epochs=200, clp_batch_size=64, tc_batch_size=512, kf_n_splits=10, cross_validate=False, test=False, save_model = False, include_embedding_loss=False, optimizer = 'Adam', tc_label_smoothing=0.9, record_runtime=False):
@@ -698,58 +705,34 @@ class Experiment:
             print("Done loading train and validate data\n")
         Training_data = dict()
         Validation_data = dict()
-        if not os.path.exists(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves"):
-            os.mkdir(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves")
+        kf_data = {"train": defaultdict(dict), "val": defaultdict(dict)}
         if cross_validate:
             for net in List_nets:
                 self.clp.learner_name = net
                 self.clp.refresh()
-                t_acc, v_acc, train_l, val_l = self.train_and_eval(data_train, data_test, epochs, clp_batch_size, tc_batch_size, kf_n_splits, cross_validate, test, save_model, include_embedding_loss, optimizer, tc_label_smoothing, record_runtime)
+                t_acc, v_acc, train_l, val_l, train_folds_loss, val_folds_loss, train_folds_acc, val_folds_acc = self.train_and_eval(data_train, data_test, epochs, clp_batch_size, tc_batch_size, kf_n_splits, cross_validate, test, save_model, include_embedding_loss, optimizer, tc_label_smoothing, record_runtime)
                 Training_data.setdefault("acc", []).append(list(t_acc))
                 Training_data.setdefault("loss", []).append(list(train_l))
                 Validation_data.setdefault("acc", []).append(list(v_acc))
                 Validation_data.setdefault("loss", []).append(list(val_l))
-
+                
+                kf_data["train"][net]["loss"] = train_folds_loss.tolist()
+                kf_data["train"][net]["acc"] = train_folds_acc.tolist()
+                kf_data["val"][net]["loss"] = val_folds_loss.tolist()
+                kf_data["val"][net]["acc"] = val_folds_acc.tolist()
+                
             if not os.path.exists(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/"):
                 os.mkdir(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/")
-            if len(List_nets) > 1:
-                with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_with_val.json", "w") as plot_file:
-                    json.dump(Training_data, plot_file, indent=3)
-            else:
-                with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_with_val_single.json", "w") as plot_file:
-                    json.dump(Training_data, plot_file, indent=3)
+
+            with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_kf.json", "w") as plot_file:
+                    json.dump(kf_data, plot_file, indent=3)
                 
-            for crv in Training_data['acc']:
-                plt.plot(crv)
-            plt.legend(tuple(List_nets))
-            plt.xlabel("Number of epochs")
-            plt.ylabel("Accuracy (%)")
-            plt.savefig(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves/tr_acc.png")
-            plt.close()
-
-            for crv in Training_data['loss']:
-                plt.plot(crv)
-            plt.legend(tuple(List_nets))
-            plt.xlabel("Number of epochs")
-            plt.ylabel("Loss")
-            plt.savefig(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves/tr_loss.png")
-            plt.close()
-            
-            for crv in Validation_data['acc']:
-                plt.plot(crv)
-            plt.legend(tuple(List_nets))
-            plt.xlabel("Number of epochs")
-            plt.ylabel("Accuracy (%)")
-            plt.savefig(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves/val_acc.png")
-            plt.close()
-
-            for crv in Validation_data['loss']:
-                plt.plot(crv)
-            plt.legend(tuple(List_nets))
-            plt.xlabel("Number of epochs")
-            plt.ylabel("Loss")
-            plt.savefig(self.kwargs['path_to_triples'].split("Triples")[0]+"Training_curves/val_loss.png")
-            plt.close()
+            #if len(List_nets) > 1:
+            #    with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_with_val.json", "w") as plot_file:
+            #        json.dump(Training_data, plot_file, indent=3)
+            #else:
+            #    with open(self.kwargs['path_to_triples'].split("Triples")[0]+"Plot_data/plot_data_with_val_single.json", "w") as plot_file:
+            #        json.dump(Training_data, plot_file, indent=3)
             
         else:
             for net in List_nets:

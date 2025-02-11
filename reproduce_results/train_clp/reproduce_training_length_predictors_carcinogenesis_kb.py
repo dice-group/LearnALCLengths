@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import torch, pandas as pd, numpy as np
 import sys, os, json
 from collections import Counter
+import random
 
 base_path = os.path.dirname(os.path.realpath(__file__)).split('reproduce_results')[0]
 sys.path.append(base_path)
@@ -38,6 +39,9 @@ print('#'*50)
 print('On Carcinogenesis knowledge base')
 print('#'*50)
 print()
+
+random.seed(kwargs['seed'])
+
 experiment = Experiment(kwargs)
 
 data_train, data_test = train_test_split(data, test_size=0.2, random_state=123)
@@ -76,6 +80,7 @@ def str2bool(v):
 parser.add_argument('--final', type=str2bool, default=False, help="Whether to train on whole data and save model")
 parser.add_argument('--test', type=str2bool, default=True, help="Whether to make predictions on test data")
 parser.add_argument('--cross_validate', type=str2bool, default=True, help="Whether to use cross validation")
+parser.add_argument('--epochs', type=int, default=50, help="Number of epochs")
 parser.add_argument('--record_runtime', type=str2bool, default=True, help="Whether to record training runtime")
 parser.add_argument('--save_model', type=str2bool, default=True, help="Whether to save the model after training")
 args = parser.parse_args()
@@ -86,4 +91,4 @@ if args.final:
     args.cross_validate = False
     args.record_runtime = True
     args.save_model = True
-experiment.train_all_nets(Models, data_train, data_test, epochs=50, clp_batch_size=512, tc_batch_size=1024, kf_n_splits=10, cross_validate=args.cross_validate, test=args.test, save_model = args.save_model, include_embedding_loss=False, optimizer = 'Adam', tc_label_smoothing=0.9, record_runtime=args.record_runtime)
+experiment.train_all_nets(Models, data_train, data_test, epochs=args.epochs, clp_batch_size=512, tc_batch_size=1024, kf_n_splits=10, cross_validate=args.cross_validate, test=args.test, save_model = args.save_model, include_embedding_loss=False, optimizer = 'Adam', tc_label_smoothing=0.9, record_runtime=args.record_runtime)
